@@ -2,7 +2,7 @@
   position: relative;
   isolation: isolate;
   min-height: 100vh;
-  background: #0753ec;
+  background: #96bcef;
 }
 
 /* One continuous backdrop rather than separate images for each section. */
@@ -17,12 +17,12 @@
 .public-wave-theme::before {
   z-index: -2;
   /* Abstract artwork fills the viewport so its cyan corners remain visible on phones. */
-  background: #0753ec var(--wave-image) center center / 100% 100% no-repeat;
+  background: #96bcef var(--wave-image) center center / 100% 100% no-repeat;
 }
 
 .public-wave-theme::after {
   z-index: -1;
-  background: linear-gradient(180deg, rgba(0, 32, 128, 0.06), rgba(0, 22, 95, 0.22));
+  background: linear-gradient(180deg, transparent, rgba(61, 104, 173, 0.04));
 }
 
 .public-wave-theme .wave-surface {
@@ -33,21 +33,29 @@
   -webkit-backdrop-filter: blur(16px);
 }
 
-.public-wave-theme .wave-heading {
+.public-wave-theme h1.wave-heading {
   color: #fff;
   text-shadow: 0 2px 20px rgba(0, 24, 105, 0.22);
 }
 
+.public-wave-theme h2.wave-heading {
+  color: #193e70;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
 .public-wave-theme .wave-label {
-  color: #f1fcff;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(215, 249, 255, 0.36);
+  color: #28548a;
+  background: rgba(241, 248, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.78);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
 
 .public-wave-theme .wave-hero {
   position: relative;
+  width: 88%;
+  max-width: 1120px;
+  margin-inline: auto;
   /* Fade only the outermost edge: no fixed height, cover crop, or stretching. */
   --hero-fade-y: min(5%, 56px);
   --hero-fade-x: min(2%, 32px);
@@ -69,5 +77,103 @@
 
 .public-wave-theme .wave-form-section {
   background: linear-gradient(180deg, transparent, rgba(0, 24, 104, 0.12));
+}
+
+/* Soft frosted panels echo the powder-blue backdrop without losing contrast. */
+.public-wave-theme .wave-step-card,
+.public-wave-theme .wave-counter-card {
+  background: linear-gradient(145deg, rgba(249, 253, 255, 0.86), rgba(221, 237, 255, 0.76));
+  border: 1px solid rgba(255, 255, 255, 0.86);
+  box-shadow: inset 0 1px 0 #fff, 0 14px 36px rgba(54, 91, 149, 0.12);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.public-wave-theme .wave-step-card {
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.public-wave-theme .wave-card-rim {
+  position: absolute;
+  top: 0;
+  left: 12%;
+  right: 12%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #fff, transparent);
+}
+
+.public-wave-theme .wave-card-orbit {
+  position: absolute;
+  top: -65px;
+  right: -65px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 0 38px rgba(255, 255, 255, 0.15), inset 0 0 35px rgba(162, 203, 250, 0.16);
+  pointer-events: none;
+}
+
+.public-wave-theme .wave-step-number {
+  color: #466d9e;
+}
+
+.public-wave-theme .wave-step-icon {
+  background: linear-gradient(145deg, #b6dcff, #6ba9ed);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 20px rgba(66, 120, 187, 0.18), inset 0 1px 12px rgba(239, 250, 255, 0.6);
+}
+
+.public-wave-theme .wave-step-title {
+  color: #203f6b;
+}
+
+.public-wave-theme .wave-step-description,
+.public-wave-theme .wave-counter-caption,
+.public-wave-theme .wave-counter-unit {
+  color: #4d6584;
+}
+
+.public-wave-theme .wave-step-arrow {
+  color: #3d6da7;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.public-wave-theme .wave-counter-card {
+  background: radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.65), transparent 70%),
+    linear-gradient(145deg, rgba(243, 250, 255, 0.88), rgba(214, 234, 255, 0.8));
+}
+
+.public-wave-theme .wave-counter-label {
+  color: #4c6a91;
+}
+
+.public-wave-theme .wave-counter-value {
+  color: #2868b6;
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.6);
+}
+
+.public-wave-theme .wave-progress-track {
+  background: rgba(79, 128, 191, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.public-wave-theme .wave-progress-fill {
+  background: linear-gradient(90deg, #5089dc, #7fc8ee);
+  box-shadow: 0 0 10px rgba(80, 137, 220, 0.2);
+}
+
+@media (hover: hover) {
+  .public-wave-theme .wave-step-card:hover {
+    border-color: #fff;
+    box-shadow: inset 0 1px 0 #fff, 0 18px 40px rgba(54, 91, 149, 0.18);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .public-wave-theme .wave-step-card {
+    transition: none;
+  }
 }
 

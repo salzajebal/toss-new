@@ -421,7 +421,7 @@ function Btn({ onClick, disabled, loading, children }: {
 export default function HomePage() {
   return (
     <div className="public-wave-theme" style={{
-      "--wave-image": `url("${import.meta.env.BASE_URL}blue-wave-background.webp")`,
+      "--wave-image": `url("${import.meta.env.BASE_URL}powder-blue-wave-background.webp")`,
     } as React.CSSProperties}>
       <HomeContent />
     </div>
@@ -847,35 +847,31 @@ function HomeContent() {
               { step: "01", SvgIcon: IconForm,  title: "정보 입력", desc: "이름, 생년월일,\n통신사·휴대폰 번호를\n입력합니다", grad: "linear-gradient(135deg, #E8F1FF 0%, #D6E8FF 100%)", iconBg: "linear-gradient(135deg, #4A9EFF 0%, #3182F6 100%)", glow: "rgba(49,130,246,0.35)" },
               { step: "02", SvgIcon: IconLock,  title: "문자 인증", desc: "발송된 인증번호\n6자리를 입력해\n본인 확인을 완료합니다", grad: "linear-gradient(135deg, #EDE8FF 0%, #DDD6FF 100%)", iconBg: "linear-gradient(135deg, #8B6EFF 0%, #6C47FF 100%)", glow: "rgba(108,71,255,0.35)" },
               { step: "03", SvgIcon: IconMoney, title: "혜택 지급", desc: "이벤트 참여 후\n5분 이내로 본인 계좌로\n즉시 입금됩니다", grad: "linear-gradient(135deg, #E8FFF4 0%, #D6FFE8 100%)", iconBg: "linear-gradient(135deg, #34D37A 0%, #10B865 100%)", glow: "rgba(16,184,101,0.35)" },
-            ].map(({ step, SvgIcon, title, desc, grad, iconBg, glow }, i) => (
+            ].map(({ step, SvgIcon, title, desc }, i) => (
               <Reveal key={step} direction="up" delay={i * 0.12}>
-                <div className="wave-surface" style={{
+                <div className="wave-step-card" style={{
                   borderRadius: 20,
                   padding: "32px 24px 28px",
                   textAlign: "center",
                   position: "relative",
-                  boxShadow: "0 2px 0 0 rgba(49,130,246,0.08), 0 8px 32px rgba(49,130,246,0.10), 0 24px 64px rgba(0,0,0,0.06)",
-                  border: "1px solid rgba(255,255,255,0.9)",
                   overflow: "hidden",
                   height: "100%",
                   boxSizing: "border-box" as const,
                 }}>
                   {/* 카드 상단 컬러 스트립 */}
-                  <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: iconBg, borderRadius: "20px 20px 0 0" }} />
+                  <div className="wave-card-rim" aria-hidden="true" />
                   {/* 배경 그라디언트 서클 */}
-                  <div style={{ position: "absolute", top: -40, right: -40, width: 140, height: 140, borderRadius: "50%", background: grad, opacity: 0.5 }} />
+                  <div className="wave-card-orbit" aria-hidden="true" />
 
                   {/* 스텝 번호 */}
-                  <div style={{ fontSize: 10, fontWeight: 900, color: "rgba(49,130,246,0.4)", letterSpacing: "0.12em", marginBottom: 16, marginTop: 8 }}>STEP {step}</div>
+                  <div className="wave-step-number" style={{ fontSize: 10, fontWeight: 900, letterSpacing: "0.12em", marginBottom: 16, marginTop: 8 }}>STEP {step}</div>
 
                   {/* 아이콘 컨테이너 — 입체 원형 */}
-                  <div style={{
+                  <div className="wave-step-icon" style={{
                     width: 72, height: 72,
                     borderRadius: "50%",
-                    background: iconBg,
                     margin: "0 auto 20px",
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    boxShadow: `0 6px 20px ${glow}, 0 2px 6px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -2px 4px rgba(0,0,0,0.10)`,
                     position: "relative",
                   }}>
                     {/* 상단 하이라이트 */}
@@ -883,18 +879,16 @@ function HomeContent() {
                     <SvgIcon />
                   </div>
 
-                  <div style={{ fontSize: 17, fontWeight: 900, color: "#0D1B2E", marginBottom: 10, letterSpacing: "-0.03em" }}>{title}</div>
-                  <div style={{ fontSize: 13, color: "#8492A6", lineHeight: 1.8, whiteSpace: "pre-line" }}>{desc}</div>
+                  <div className="wave-step-title" style={{ fontSize: 17, fontWeight: 900, marginBottom: 10, letterSpacing: "-0.03em" }}>{title}</div>
+                  <div className="wave-step-description" style={{ fontSize: 13, lineHeight: 1.8, whiteSpace: "pre-line" }}>{desc}</div>
 
                   {/* 연결 화살표 */}
                   {!isMobile && i < 2 && (
-                    <div style={{
-                      position: "absolute", right: -14, top: "50%", transform: "translateY(-50%)",
+                    <div className="wave-step-arrow" style={{
+                      position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)",
                       width: 28, height: 28, borderRadius: "50%",
-                      background: WHITE,
-                      boxShadow: "0 2px 12px rgba(49,130,246,0.18)",
                       display: "flex", alignItems: "center", justifyContent: "center",
-                      color: BLUE, fontSize: 13, fontWeight: 900, zIndex: 2,
+                      fontSize: 13, fontWeight: 900, zIndex: 2,
                     }}>›</div>
                   )}
                 </div>
@@ -920,26 +914,23 @@ function HomeContent() {
             </h2>
 
             {/* 카운터 카드 — 시안 B */}
-            <div className="wave-surface" style={{
+            <div className="wave-counter-card" style={{
               borderRadius: 28,
               padding: isMobile ? "40px 28px 36px" : "52px 52px 44px",
               textAlign: "center",
-              boxShadow: "6px 12px 0 rgba(49,130,246,0.18), 0 24px 56px rgba(49,130,246,0.12), 0 4px 12px rgba(0,0,0,0.05)",
-              border: "1px solid rgba(49,130,246,0.10)",
               position: "relative",
               overflow: "hidden",
             }}>
               {/* 상단 파란 스트립 */}
-              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: BLUE, borderRadius: "28px 28px 0 0" }} />
+              <div className="wave-card-rim" aria-hidden="true" />
 
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#94A3B8", letterSpacing: "0.1em", marginBottom: 20, textTransform: "uppercase" as const }}>누적 신청 건수</div>
+              <div className="wave-counter-label" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", marginBottom: 20, textTransform: "uppercase" as const }}>누적 신청 건수</div>
 
               {/* 숫자 */}
               <div style={{ display: "flex", alignItems: "baseline", justifyContent: "center", gap: 6, marginBottom: 6 }}>
-                <span style={{
+                <span className="wave-counter-value" style={{
                   fontSize: isMobile ? 60 : 76,
                   fontWeight: 900,
-                  color: BLUE,
                   letterSpacing: "-0.04em",
                   lineHeight: 1,
                   fontVariantNumeric: "tabular-nums",
@@ -947,20 +938,18 @@ function HomeContent() {
                 }}>
                   {liveCount > 0 ? liveCount.toLocaleString() : "—"}
                 </span>
-                <span style={{ fontSize: 20, fontWeight: 700, color: "#CBD5E1" }}>명</span>
+                <span className="wave-counter-unit" style={{ fontSize: 20, fontWeight: 700 }}>명</span>
               </div>
 
               {/* 진행 바 */}
-              <div style={{ margin: "28px 0 14px", background: "rgba(49,130,246,0.08)", borderRadius: 99, height: 7, overflow: "hidden" }}>
-                <div style={{
+              <div className="wave-progress-track" style={{ margin: "28px 0 14px", borderRadius: 99, height: 7, overflow: "hidden" }}>
+                <div className="wave-progress-fill" style={{
                   height: "100%", borderRadius: 99,
-                  background: BLUE,
                   width: liveCount > 0 ? `${Math.min(100, (liveCount / 5000) * 100)}%` : "0%",
                   transition: "width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                  boxShadow: "0 0 10px rgba(49,130,246,0.4)",
                 }} />
               </div>
-              <div style={{ fontSize: 11, color: "#CBD5E1", letterSpacing: "0.04em" }}>
+              <div className="wave-counter-caption" style={{ fontSize: 11, letterSpacing: "0.04em" }}>
                 목표 5,000명을 향해 달려가는 중
               </div>
             </div>
