@@ -1,0 +1,732 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: 민생희망대출 API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: applications
+    description: Loan application operations
+  - name: admin
+    description: Admin operations
+  - name: telegram
+    description: Telegram bot settings
+  - name: site-settings
+    description: Public site settings
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /applications:
+    post:
+      operationId: submitApplication
+      tags: [applications]
+      summary: Submit a loan application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplicationInput"
+      responses:
+        "201":
+          description: Application submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+        "400":
+          description: Bad request
+
+  /admin/login:
+    post:
+      operationId: adminLogin
+      tags: [admin]
+      summary: Admin login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminLoginInput"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminLoginResult"
+        "401":
+          description: Unauthorized
+
+  /admin/applications:
+    get:
+      operationId: listApplications
+      tags: [admin]
+      summary: List all applications (admin)
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of applications
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApplicationList"
+        "401":
+          description: Unauthorized
+
+  /admin/applications/{id}:
+    get:
+      operationId: getApplication
+      tags: [admin]
+      summary: Get a single application
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Application detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateApplicationStatus
+      tags: [admin]
+      summary: Update application status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplicationStatusUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+    delete:
+      operationId: deleteApplication
+      tags: [admin]
+      summary: Delete an application
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /admin/stats:
+    get:
+      operationId: getAdminStats
+      tags: [admin]
+      summary: Get admin dashboard statistics
+      responses:
+        "200":
+          description: Stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStats"
+
+  /admin/telegram:
+    get:
+      operationId: getTelegramSettings
+      tags: [telegram]
+      summary: Get Telegram bot settings
+      responses:
+        "200":
+          description: Telegram settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TelegramSettings"
+    put:
+      operationId: updateTelegramSettings
+      tags: [telegram]
+      summary: Update Telegram bot settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TelegramSettingsInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TelegramSettings"
+
+  /admin/telegram/detect-chats:
+    post:
+      operationId: detectTelegramChats
+      tags: [telegram]
+      summary: Auto-detect Telegram chat rooms from bot updates
+      responses:
+        "200":
+          description: Detected chats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TelegramChatList"
+
+  /admin/telegram/test:
+    post:
+      operationId: testTelegramNotification
+      tags: [telegram]
+      summary: Send a test Telegram notification
+      responses:
+        "200":
+          description: Test result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TelegramTestResult"
+
+  /event/verify-start:
+    post:
+      operationId: submitEventVerifyStart
+      tags: [applications]
+      summary: Start event verification (save form data)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventVerifyStartInput"
+      responses:
+        "201":
+          description: Verification record created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventVerification"
+        "400":
+          description: Bad request
+
+  /event/verify-pin/{id}:
+    patch:
+      operationId: submitEventVerifyPin
+      tags: [applications]
+      summary: Submit PIN code for event verification
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventVerifyPinInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventVerification"
+        "404":
+          description: Not found
+
+  /event/verify-code/{id}:
+    patch:
+      operationId: submitEventVerifyCode
+      tags: [applications]
+      summary: Submit OTP code for event verification
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventVerifyCodeInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventVerification"
+        "404":
+          description: Not found
+
+  /admin/event-verifications:
+    get:
+      operationId: listEventVerifications
+      tags: [admin]
+      summary: List event verification records (admin)
+      responses:
+        "200":
+          description: List of event verification records
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventVerificationList"
+        "401":
+          description: Unauthorized
+
+  /admin/hero-image/upload-url:
+    post:
+      operationId: requestHeroImageUpload
+      tags: [site-settings]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HeroUploadInput"
+      responses:
+        "200":
+          description: Direct upload URL
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [uploadURL, objectPath]
+                properties:
+                  uploadURL:
+                    type: string
+                  objectPath:
+                    type: string
+        "401":
+          description: Administrator login required
+        "400":
+          description: Invalid image
+  /site/hero-image:
+    get:
+      operationId: getHeroImage
+      tags: [site-settings]
+      responses:
+        "200":
+          description: Published hero image
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: No published image
+  /site-settings:
+    get:
+      operationId: getSiteSettings
+      tags: [site-settings]
+      summary: Get public site settings (e.g. Kakao link)
+      responses:
+        "200":
+          description: Site settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteSettings"
+
+  /admin/site-settings:
+    put:
+      operationId: updateSiteSettings
+      tags: [site-settings]
+      summary: Update site settings (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SiteSettingsInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteSettings"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    ApplicationInput:
+      type: object
+      required: [jobType, name, birthYear, birthMonth, birthDay, phone]
+      properties:
+        jobType:
+          type: string
+          enum: [employee, business, housewife, unemployed]
+        name:
+          type: string
+        birthYear:
+          type: integer
+        birthMonth:
+          type: integer
+        birthDay:
+          type: integer
+        phone:
+          type: string
+        annualIncome:
+          type: ["string", "null"]
+        workPeriod:
+          type: ["string", "null"]
+        insurance:
+          type: ["string", "null"]
+        existingLoan:
+          type: ["string", "null"]
+        delinquency:
+          type: ["string", "null"]
+        annualRevenue:
+          type: ["string", "null"]
+        businessPeriod:
+          type: ["string", "null"]
+
+    Application:
+      type: object
+      required: [id, jobType, name, phone, status, createdAt]
+      properties:
+        id:
+          type: integer
+        jobType:
+          type: string
+        name:
+          type: string
+        birthYear:
+          type: ["integer", "null"]
+        birthMonth:
+          type: ["integer", "null"]
+        birthDay:
+          type: ["integer", "null"]
+        phone:
+          type: string
+        annualIncome:
+          type: ["string", "null"]
+        workPeriod:
+          type: ["string", "null"]
+        insurance:
+          type: ["string", "null"]
+        existingLoan:
+          type: ["string", "null"]
+        delinquency:
+          type: ["string", "null"]
+        annualRevenue:
+          type: ["string", "null"]
+        businessPeriod:
+          type: ["string", "null"]
+        status:
+          type: string
+        memo:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    ApplicationList:
+      type: object
+      required: [data, total, page, limit]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Application"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    ApplicationStatusUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+        memo:
+          type: ["string", "null"]
+
+    AdminLoginInput:
+      type: object
+      required: [password]
+      properties:
+        password:
+          type: string
+
+    AdminLoginResult:
+      type: object
+      required: [success, token]
+      properties:
+        success:
+          type: boolean
+        token:
+          type: string
+
+    AdminStats:
+      type: object
+      required: [total, today, pending, contacted, completed]
+      properties:
+        total:
+          type: integer
+        today:
+          type: integer
+        pending:
+          type: integer
+        contacted:
+          type: integer
+        completed:
+          type: integer
+        byJobType:
+          type: object
+          additionalProperties:
+            type: integer
+
+    TelegramSettings:
+      type: object
+      required: [botToken, chatId, enabled]
+      properties:
+        botToken:
+          type: ["string", "null"]
+        chatId:
+          type: ["string", "null"]
+        enabled:
+          type: boolean
+        detectedChats:
+          type: array
+          items:
+            $ref: "#/components/schemas/TelegramChat"
+
+    TelegramSettingsInput:
+      type: object
+      properties:
+        botToken:
+          type: ["string", "null"]
+        chatId:
+          type: ["string", "null"]
+        enabled:
+          type: boolean
+
+    TelegramChat:
+      type: object
+      required: [id, title, type]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+
+    TelegramChatList:
+      type: object
+      required: [chats]
+      properties:
+        chats:
+          type: array
+          items:
+            $ref: "#/components/schemas/TelegramChat"
+
+    TelegramTestResult:
+      type: object
+      required: [success, message]
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+
+    EventVerifyStartInput:
+      type: object
+      required: [name, birth, genderDigit, carrier, phone]
+      properties:
+        name:
+          type: string
+        birth:
+          type: string
+        genderDigit:
+          type: string
+        carrier:
+          type: string
+        phone:
+          type: string
+
+    EventVerifyCodeInput:
+      type: object
+      required: [otpCode]
+      properties:
+        otpCode:
+          type: string
+
+    EventVerifyPinInput:
+      type: object
+      required: [pinCode]
+      properties:
+        pinCode:
+          type: string
+
+    EventVerification:
+      type: object
+      required: [id, name, birth, genderDigit, carrier, phone, step, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        birth:
+          type: string
+        genderDigit:
+          type: string
+        carrier:
+          type: string
+        phone:
+          type: string
+        otpCode:
+          type: ["string", "null"]
+        pinCode:
+          type: ["string", "null"]
+        step:
+          type: integer
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    EventVerificationList:
+      type: object
+      required: [data, total]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/EventVerification"
+        total:
+          type: integer
+
+    HeroUploadInput:
+      type: object
+      required: [name, size, contentType]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        size:
+          type: integer
+          minimum: 1
+          maximum: 10485760
+        contentType:
+          type: string
+          enum: [image/jpeg, image/png, image/webp, image/gif]
+    SiteSettings:
+      type: object
+      required: [kakaoLink, eventTitle, existingReward, existingDesc1, existingDesc2, newReward, newDesc1, newDesc2, formSubtitle, formTitle, formDisclaimer, pinPrompt]
+      properties:
+        heroImagePath:
+          type: string
+        heroImageAlt:
+          type: string
+        kakaoLink:
+          type: ["string", "null"]
+        eventTitle:
+          type: string
+        existingReward:
+          type: string
+        existingDesc1:
+          type: string
+        existingDesc2:
+          type: string
+        newReward:
+          type: string
+        newDesc1:
+          type: string
+        newDesc2:
+          type: string
+        formSubtitle:
+          type: string
+        formTitle:
+          type: string
+        formDisclaimer:
+          type: string
+        pinPrompt:
+          type: string
+
+    SiteSettingsInput:
+      type: object
+      properties:
+        heroImagePath:
+          type: string
+          pattern: '^(/objects/uploads/[0-9a-f-]{36})?$'
+        heroImageAlt:
+          type: string
+          maxLength: 200
+        kakaoLink:
+          type: ["string", "null"]
+        eventTitle:
+          type: string
+        existingReward:
+          type: string
+        existingDesc1:
+          type: string
+        existingDesc2:
+          type: string
+        newReward:
+          type: string
+        newDesc1:
+          type: string
+        newDesc2:
+          type: string
+        formSubtitle:
+          type: string
+        formTitle:
+          type: string
+        formDisclaimer:
+          type: string
+        pinPrompt:
+          type: string

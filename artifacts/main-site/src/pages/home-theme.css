@@ -1,0 +1,73 @@
+.public-wave-theme {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  background: #0753ec;
+}
+
+/* One continuous backdrop rather than separate images for each section. */
+.public-wave-theme::before,
+.public-wave-theme::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.public-wave-theme::before {
+  z-index: -2;
+  /* Abstract artwork fills the viewport so its cyan corners remain visible on phones. */
+  background: #0753ec var(--wave-image) center center / 100% 100% no-repeat;
+}
+
+.public-wave-theme::after {
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(0, 32, 128, 0.06), rgba(0, 22, 95, 0.22));
+}
+
+.public-wave-theme .wave-surface {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 12px 40px rgba(0, 28, 108, 0.16);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.public-wave-theme .wave-heading {
+  color: #fff;
+  text-shadow: 0 2px 20px rgba(0, 24, 105, 0.22);
+}
+
+.public-wave-theme .wave-label {
+  color: #f1fcff;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(215, 249, 255, 0.36);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.public-wave-theme .wave-hero {
+  position: relative;
+  /* Fade only the outermost edge: no fixed height, cover crop, or stretching. */
+  --hero-fade-y: min(5%, 56px);
+  --hero-fade-x: min(2%, 32px);
+  -webkit-mask-image:
+    linear-gradient(to bottom, transparent, #000 var(--hero-fade-y), #000 calc(100% - var(--hero-fade-y)), transparent),
+    linear-gradient(to right, transparent, #000 var(--hero-fade-x), #000 calc(100% - var(--hero-fade-x)), transparent);
+  mask-image:
+    linear-gradient(to bottom, transparent, #000 var(--hero-fade-y), #000 calc(100% - var(--hero-fade-y)), transparent),
+    linear-gradient(to right, transparent, #000 var(--hero-fade-x), #000 calc(100% - var(--hero-fade-x)), transparent);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+.public-wave-theme .wave-hero img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.public-wave-theme .wave-form-section {
+  background: linear-gradient(180deg, transparent, rgba(0, 24, 104, 0.12));
+}
+
