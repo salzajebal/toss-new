@@ -1,7 +1,9 @@
 import { randomUUID } from "node:crypto";
 import { objectStorageClient, ObjectStorageService } from "./objectStorage.js";
+import { createLocalHeroUpload, readLocalHeroImage, usesLocalHeroStorage } from "./localHeroImages.js";
 
 export async function createHeroUpload(size: number, contentType: string, origin?: string) {
+  if (usesLocalHeroStorage()) return createLocalHeroUpload(size, contentType);
   const root = new ObjectStorageService().getPrivateObjectDir().replace(/^\/|\/$/g, "");
   const [bucket, ...prefix] = root.split("/");
   const id = randomUUID();
@@ -15,6 +17,10 @@ export async function createHeroUpload(size: number, contentType: string, origin
 }
 
 export async function validateHeroImage(path: string) {
+  if (usesLocalHeroStorage()) {
+    await readLocalHeroImage(path);
+    return;
+  }
   const file = await new ObjectStorageService().getObjectEntityFile(path);
   const [metadata] = await file.getMetadata();
   if (Number(metadata.size) > 10485760 || Number(metadata.size) < 1) {

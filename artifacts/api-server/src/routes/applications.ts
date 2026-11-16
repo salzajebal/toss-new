@@ -4,6 +4,7 @@ import { desc, eq, count, and, gte, sql } from "drizzle-orm";
 import { SubmitApplicationBody } from "@workspace/api-zod";
 import { sendTelegramNotification } from "../lib/telegram.js";
 import { ObjectStorageService } from "../lib/objectStorage.js";
+import { readLocalHeroImage, usesLocalHeroStorage } from "../lib/localHeroImages.js";
 
 const router = Router();
 
@@ -60,6 +61,16 @@ router.get("/site/hero-image", async (req, res) => {
     const path = await getSettingPublic("hero_image_path");
     if (!path) {
       res.sendStatus(404);
+      return;
+    }
+    if (usesLocalHeroStorage()) {
+      const image = await readLocalHeroImage(path);
+      res.set({
+        "Content-Type": image.contentType,
+        "Cache-Control": "no-store",
+        "X-Content-Type-Options": "nosniff",
+      });
+      res.send(image.buffer);
       return;
     }
     const file = await new ObjectStorageService().getObjectEntityFile(path);

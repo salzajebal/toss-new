@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, raw } from "express";
 import { db, applicationsTable, settingsTable, eventVerificationsTable } from "@workspace/db";
 import { desc, eq, count, gte, sql } from "drizzle-orm";
 import {
@@ -13,10 +13,26 @@ import {
   RequestHeroImageUploadBody,
 } from "@workspace/api-zod";
 import { createHeroUpload, validateHeroImage } from "../lib/heroImages.js";
+import { acceptLocalHeroUpload } from "../lib/localHeroImages.js";
 import { adminAuthConfigured, checkAdminPassword, createAdminToken, requireAdmin } from "../lib/adminAuth.js";
 import { detectChats, sendTelegramNotification } from "../lib/telegram.js";
 
 const router = Router();
+
+// A short-lived signed ticket authorizes only the declared image and size.
+// The private image-service credential is never returned to the browser.
+router.put("/admin/hero-image/local-upload", raw({ type: ["image/png", "image/jpeg", "image/webp", "image/gif"], limit: "10mb" }), async (req, res) => {
+  try {
+    await acceptLocalHeroUpload(
+      typeof req.query.ticket === "string" ? req.query.ticket : "",
+      req.body,
+      req.get("content-type")?.split(";")[0] || "",
+    );
+    res.sendStatus(201);
+  } catch {
+    res.status(400).json({ error: "이미지 업로드에 실패했습니다. 이미지를 다시 선택해주세요." });
+  }
+});
 
 router.post("/admin/hero-image/upload-url", requireAdmin, async (req, res) => {
   const parsed = RequestHeroImageUploadBody.safeParse(req.body);
